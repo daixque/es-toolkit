@@ -1,0 +1,77 @@
+{
+  "index_patterns": [
+    "datasets-wikimedia_wikipedia*.ja"
+  ],
+  "priority": 600,
+  "template": {
+    "mappings": {
+      "properties": {
+        "dataset": {
+          "properties": {
+            "lang": {
+              "type": "keyword",
+              "ignore_above": 16
+            },
+            "name": {
+              "type": "keyword",
+              "ignore_above": 256
+            },
+            "path": {
+              "type": "keyword",
+              "ignore_above": 256
+            },
+            "type": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "id": {
+          "type": "keyword",
+          "ignore_above": 256
+        },
+        "text": {
+          "type": "text",
+          "analyzer": "kuromoji",
+          "copy_to": "text_semantic"
+        },
+        "text_semantic": {
+          "type": "semantic_text",
+          "inference_id": "e5-small-endpoint"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "kuromoji",
+          "copy_to": "title_semantic",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "title_semantic": {
+          "type": "semantic_text",
+          "inference_id": "e5-small-endpoint"
+        },
+        "url": {
+          "type": "keyword",
+          "ignore_above": 1024
+        }
+      }
+    },
+    "settings": {
+      "index": {
+        "routing": {
+          "allocation": {
+            "include": {
+              "_tier_preference": "data_content"
+            }
+          }
+        },
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}

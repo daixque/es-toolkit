@@ -1,0 +1,225 @@
+{
+  "resources": {
+    "elasticsearch": [
+      {
+        "ref_id": "main-elasticsearch",
+        "region": "gcp-asia-northeast1",
+        "plan": {
+          "cluster_topology": [
+            {
+              "id": "hot_content",
+              "node_roles": [
+                "master",
+                "ingest",
+                "transform",
+                "data_hot",
+                "remote_cluster_client",
+                "data_content"
+              ],
+              "zone_count": 2,
+              "elasticsearch": {
+                "node_attributes": {
+                  "data": "hot"
+                }
+              },
+              "instance_configuration_id": "gcp.es.datahot.n2.68x10x45",
+              "size": {
+                "value": 1024,
+                "resource": "memory"
+              }
+            },
+            {
+              "id": "warm",
+              "node_roles": [
+                "data_warm",
+                "remote_cluster_client"
+              ],
+              "zone_count": 2,
+              "elasticsearch": {
+                "node_attributes": {
+                  "data": "warm"
+                }
+              },
+              "instance_configuration_id": "gcp.es.datawarm.n2.68x10x190",
+              "size": {
+                "value": 0,
+                "resource": "memory"
+              }
+            },
+            {
+              "id": "cold",
+              "node_roles": [
+                "data_cold",
+                "remote_cluster_client"
+              ],
+              "zone_count": 1,
+              "elasticsearch": {
+                "node_attributes": {
+                  "data": "cold"
+                }
+              },
+              "instance_configuration_id": "gcp.es.datacold.n2.68x10x190",
+              "size": {
+                "value": 0,
+                "resource": "memory"
+              }
+            },
+            {
+              "id": "frozen",
+              "node_roles": [
+                "data_frozen"
+              ],
+              "zone_count": 1,
+              "elasticsearch": {
+                "node_attributes": {
+                  "data": "frozen"
+                }
+              },
+              "instance_configuration_id": "gcp.es.datafrozen.n2.68x10x90",
+              "size": {
+                "value": 0,
+                "resource": "memory"
+              }
+            },
+            {
+              "id": "master",
+              "node_roles": [
+                "master",
+                "remote_cluster_client"
+              ],
+              "zone_count": 3,
+              "instance_configuration_id": "gcp.es.master.n2.68x32x45",
+              "size": {
+                "value": 0,
+                "resource": "memory"
+              }
+            },
+            {
+              "id": "coordinating",
+              "node_roles": [
+                "ingest",
+                "remote_cluster_client"
+              ],
+              "zone_count": 2,
+              "instance_configuration_id": "gcp.es.coordinating.n2.68x16x45",
+              "size": {
+                "value": 0,
+                "resource": "memory"
+              }
+            },
+            {
+              "id": "ml",
+              "node_roles": [
+                "ml",
+                "remote_cluster_client"
+              ],
+              "zone_count": 1,
+              "instance_configuration_id": "gcp.es.ml.n2.68x32x45",
+              "autoscaling_tier_override": true,
+              "autoscaling_min": {
+                "value": 0,
+                "resource": "memory"
+              },
+              "autoscaling_max": {
+                "value": 65536,
+                "resource": "memory"
+              }
+            }
+          ],
+          "elasticsearch": {
+            "version": "8.16.1",
+            "enabled_built_in_plugins": [
+              "analysis-icu",
+              "analysis-kuromoji"
+            ]
+          },
+          "deployment_template": {
+            "id": "gcp-storage-optimized"
+          }
+        },
+        "settings": {
+          "dedicated_masters_threshold": 6
+        }
+      }
+    ],
+    "kibana": [
+      {
+        "ref_id": "main-kibana",
+        "elasticsearch_cluster_ref_id": "main-elasticsearch",
+        "region": "gcp-asia-northeast1",
+        "plan": {
+          "cluster_topology": [
+            {
+              "instance_configuration_id": "gcp.kibana.n2.68x32x45",
+              "size": {
+                "value": 1024,
+                "resource": "memory"
+              },
+              "zone_count": 1
+            }
+          ],
+          "kibana": {
+            "version": "8.16.1"
+          }
+        }
+      }
+    ],
+    "enterprise_search": [
+      {
+        "ref_id": "main-enterprise_search",
+        "elasticsearch_cluster_ref_id": "main-elasticsearch",
+        "region": "gcp-asia-northeast1",
+        "plan": {
+          "cluster_topology": [
+            {
+              "node_type": {
+                "appserver": true,
+                "worker": true,
+                "connector": true
+              },
+              "instance_configuration_id": "gcp.enterprisesearch.n2.68x32x45",
+              "size": {
+                "value": 2048,
+                "resource": "memory"
+              },
+              "zone_count": 1
+            }
+          ],
+          "enterprise_search": {
+            "version": "8.16.1"
+          }
+        }
+      }
+    ],
+    "integrations_server": [
+      {
+        "ref_id": "main-integrations_server",
+        "elasticsearch_cluster_ref_id": "main-elasticsearch",
+        "region": "gcp-asia-northeast1",
+        "plan": {
+          "cluster_topology": [
+            {
+              "instance_configuration_id": "gcp.integrationsserver.n2.68x32x45",
+              "size": {
+                "value": 1024,
+                "resource": "memory"
+              },
+              "zone_count": 1
+            }
+          ],
+          "integrations_server": {
+            "version": "8.16.1"
+          }
+        }
+      }
+    ]
+  },
+  "settings": {
+    "autoscaling_enabled": false,
+    "solution_type": "search"
+  },
+  "name": "my-rag",
+  "metadata": {
+    "system_owned": false
+  }
+}
